@@ -1,6 +1,18 @@
-ban-times:
+ban-durations:
     - "10m"
     - "1h"
     - "6h"
     - "24h"
     - "7d"
+
+# Should someone lose one ban after a certain time period? So if the counter is on 2 and the time period passes,
+# the counter will go down to 1 and the next ban will only last 1h instead of 6h.
+
+#use -1 to remove all bans after the time period
+lose-ban-after-time: true
+lose-ban-after-duration: "2h"
+lose-ban-amount: 1
+
+
+lose-ban-after-kill: true
+lose-ban-amount-on-kill: -1

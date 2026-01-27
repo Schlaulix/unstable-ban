@@ -13,6 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.UUID;
 
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
@@ -25,7 +26,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
 
         if (!banFile.exists()){
-            saveResource("bans.yaml", false);
+            saveResource("bans.yml", false);
         }
 
         banConfig = YamlConfiguration.loadConfiguration(banFile);
@@ -38,7 +39,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     @Override
     public void onDisable() {
         try{
-            savebansfile(banFile, banConfig, this);
+            saveBansFile(banFile, banConfig, this);
             getLogger().info("UnstableBan saved config and disabled (v"+ getPluginMeta().getVersion() +")");
         } catch (Exception e) {
             getLogger().info("ERROR while saving config on disable!");
@@ -54,7 +55,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         if (!player.hasPlayedBefore() || banCount(banConfig, uuid) == banTimesLength){
 
             banConfig.set("bans." + uuid + ".banCount", 0);
-            savebansfile(banFile, banConfig, this);
+            saveBansFile(banFile, banConfig, this);
         }
     }
 
@@ -65,12 +66,14 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         if (killer != null){
             UUID uuid = player.getUniqueId();
             int currentBanCount = banCount(banConfig, uuid);
-            String banTime = getConfig().getStringList("ban-times").get(currentBanCount);
+            String banDuration = getConfig().getStringList("ban-times").get(currentBanCount);
             Bukkit.dispatchCommand(
-                    Bukkit.getConsoleSender(), "ban" + uuid + " " + banTime + " You got killed banned by " + killer.getName()
+                    Bukkit.getConsoleSender(), "ban" + uuid + " " + banDuration + " You got killed banned by " + killer.getName()
             );
             banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
-            savebansfile(banFile, banConfig, this);
+            saveBansFile(banFile, banConfig, this);
         }
     }
+
+
 }

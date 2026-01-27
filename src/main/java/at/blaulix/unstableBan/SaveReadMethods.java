@@ -9,7 +9,7 @@ import java.util.logging.Level;
 
 
 public interface SaveReadMethods {
-    default void savebansfile(File banFile, FileConfiguration banConfig, JavaPlugin plugin) {
+    default void saveBansFile(File banFile, FileConfiguration banConfig, JavaPlugin plugin) {
         try {
             banConfig.save(banFile);
         } catch (Exception e) {
@@ -19,5 +19,10 @@ public interface SaveReadMethods {
 
     default int banCount(FileConfiguration banConfig, UUID uuid) {
         return banConfig.getInt("bans." + uuid + ".banCount");
+    }
+
+    default void timeStampBan(FileConfiguration banConfig, UUID uuid, long timestamp, File banFile, JavaPlugin plugin) {
+        banConfig.set("bans." + uuid + ".lastBanTimestamp", timestamp);
+        saveBansFile(banFile, banConfig, plugin);
     }
 }
