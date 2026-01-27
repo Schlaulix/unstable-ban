@@ -5,12 +5,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.util.UUID;
 
+import static sun.font.FontUtilities.getLogger;
+
 public interface saveReadMethods {
     default void savebansfile(File banFile, FileConfiguration banConfig) {
         try {
             banConfig.save(banFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            getLogger().info("ERROR while saving config!");
         }
     }
 
