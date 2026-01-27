@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.UUID;
 
-public final class UnstableBan extends JavaPlugin implements Listener, saveReadMethods {
+public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
     private FileConfiguration banConfig;
     File banFile = new File(getDataFolder(), "bans.yaml");
 
@@ -38,7 +38,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, saveReadM
     @Override
     public void onDisable() {
         try{
-            savebansfile(banFile, banConfig);
+            savebansfile(banFile, banConfig, this);
             getLogger().info("UnstableBan saved config and disabled (v"+ getPluginMeta().getVersion() +")");
         } catch (Exception e) {
             getLogger().info("ERROR while saving config on disable!");
@@ -54,7 +54,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, saveReadM
         if (!player.hasPlayedBefore() || banCount(banConfig, uuid) == banTimesLength){
 
             banConfig.set("bans." + uuid + ".banCount", 0);
-            savebansfile(banFile, banConfig);
+            savebansfile(banFile, banConfig, this);
         }
     }
 
@@ -70,7 +70,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, saveReadM
                     Bukkit.getConsoleSender(), "ban" + uuid + " " + banTime + " You got killed banned by " + killer.getName()
             );
             banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
-            savebansfile(banFile, banConfig);
+            savebansfile(banFile, banConfig, this);
         }
     }
 }

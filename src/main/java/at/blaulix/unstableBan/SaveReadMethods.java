@@ -1,18 +1,19 @@
 package at.blaulix.unstableBan;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.UUID;
+import java.util.logging.Level;
 
-import static sun.font.FontUtilities.getLogger;
 
-public interface saveReadMethods {
-    default void savebansfile(File banFile, FileConfiguration banConfig) {
+public interface SaveReadMethods {
+    default void savebansfile(File banFile, FileConfiguration banConfig, JavaPlugin plugin) {
         try {
             banConfig.save(banFile);
         } catch (Exception e) {
-            getLogger().info("ERROR while saving config!");
+            plugin.getLogger().log(Level.SEVERE, "ERROR while saving bans config!", e);
         }
     }
 
