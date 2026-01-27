@@ -4,6 +4,3 @@ ban-times:
     - "6h"
     - "24h"
     - "7d"
-
-ban-message:
-  - "You got killed."

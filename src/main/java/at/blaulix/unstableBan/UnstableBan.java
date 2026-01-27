@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
     private FileConfiguration banConfig;
-    File banFile = new File(getDataFolder(), "bans.yaml");
+    File banFile = new File(getDataFolder(), "bans.yml");
 
     @Override
     public void onEnable() {
