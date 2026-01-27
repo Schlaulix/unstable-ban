@@ -17,10 +17,11 @@ import java.util.UUID;
 
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
     private FileConfiguration banConfig;
-    File banFile = new File(getDataFolder(), "bans.yml");
+    private File banFile;
 
     @Override
     public void onEnable() {
+        banFile = new File(getDataFolder(), "bans.yml");
         saveDefaultConfig();
 
 
@@ -46,12 +47,13 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     }
 
     @EventHandler
-    public void onFirstJoin(PlayerJoinEvent event){
+    public void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         int banTimesLength = getConfig().getStringList("ban-times").size();
+        String path = "bans." + uuid;
 
-        if (!player.hasPlayedBefore() || banCount(banConfig, uuid) == banTimesLength){
+        if (!banConfig.contains(path) || banCount(banConfig, uuid) == banTimesLength){
 
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
@@ -61,13 +63,13 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event){
         Player player = event.getPlayer();
-        Entity killer = player.getKiller();
+        Player killer = player.getKiller();
         if (killer != null){
             UUID uuid = player.getUniqueId();
             int currentBanCount = banCount(banConfig, uuid);
             String banDuration = getConfig().getStringList("ban-times").get(currentBanCount);
             Bukkit.dispatchCommand(
-                    Bukkit.getConsoleSender(), "ban" + uuid + " " + banDuration + " You got killed banned by " + killer.getName()
+                    Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got killed banned by " + killer.getName()
             );
             banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
             saveBansFile(banFile, banConfig, this);
