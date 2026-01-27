@@ -53,7 +53,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         int banTimesLength = getConfig().getStringList("ban-times").size();
         String path = "bans." + uuid;
 
-        if (!banConfig.contains(path) || banCount(banConfig, uuid) == banTimesLength){
+        if (!banConfig.contains(path) || banCount(banConfig, uuid) >= banTimesLength){
 
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
