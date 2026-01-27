@@ -13,7 +13,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.UUID;
 
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {

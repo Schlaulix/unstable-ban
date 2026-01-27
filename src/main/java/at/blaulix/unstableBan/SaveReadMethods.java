@@ -21,8 +21,7 @@ public interface SaveReadMethods {
         return banConfig.getInt("bans." + uuid + ".banCount");
     }
 
-    default void timeStampBan(FileConfiguration banConfig, UUID uuid, long timestamp, File banFile, JavaPlugin plugin) {
-        banConfig.set("bans." + uuid + ".lastBanTimestamp", timestamp);
-        saveBansFile(banFile, banConfig, plugin);
+    default void playTimeatBan(FileConfiguration banConfig, UUID uuid, long playTimeAtBan) {
+        banConfig.set("bans." + uuid + ".playTimeAtBan", playTimeAtBan);
     }
 }
