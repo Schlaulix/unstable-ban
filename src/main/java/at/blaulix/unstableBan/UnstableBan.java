@@ -69,7 +69,6 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         Bukkit.dispatchCommand(
                 Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got banned!"
         );
-        //Bukkit.getConsoleSender(), "ban " + uuid + " 1m You got banned"
 
         banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
         saveBansFile(banFile, banConfig, this);
