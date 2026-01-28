@@ -24,35 +24,36 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         saveDefaultConfig();
 
 
-        if (!banFile.exists()){
+        if (!banFile.exists()) {
             saveResource("bans.yml", false);
         }
 
         banConfig = YamlConfiguration.loadConfiguration(banFile);
 
-        getLogger().info("UnstableBan enabled (v"+ getPluginMeta().getVersion() +")");
+        getLogger().info("UnstableBan enabled (v" + getPluginMeta().getVersion() + ")");
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(this, this);
     }
 
     @Override
     public void onDisable() {
-        try{
+        try {
             saveBansFile(banFile, banConfig, this);
-            getLogger().info("UnstableBan saved config and disabled (v"+ getPluginMeta().getVersion() +")");
+            getLogger().info("UnstableBan saved config and disabled (v" + getPluginMeta().getVersion() + ")");
         } catch (Exception e) {
             getLogger().info("ERROR while saving config on disable!");
         }
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event){
+    public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        int banTimesLength = getConfig().getStringList("ban-times").size();
+
+        int banTimesLength = getConfig().getStringList("ban-durations").size();
         String path = "bans." + uuid;
 
-        if (!banConfig.contains(path) || banCount(banConfig, uuid) >= banTimesLength){
+        if (!banConfig.contains(path) || banCount(banConfig, uuid) >= banTimesLength) {
 
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
@@ -60,19 +61,19 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event){
+    public void onDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
-        Player killer = player.getKiller();
-        if (killer != null){
-            UUID uuid = player.getUniqueId();
-            int currentBanCount = banCount(banConfig, uuid);
-            String banDuration = getConfig().getStringList("ban-times").get(currentBanCount);
-            Bukkit.dispatchCommand(
-                    Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got killed banned by " + killer.getName()
-            );
-            banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
-            saveBansFile(banFile, banConfig, this);
-        }
+        UUID uuid = player.getUniqueId();
+        int currentBanCount = banCount(banConfig, uuid);
+        String banDuration = getConfig().getStringList("ban-durations").get(currentBanCount);
+        Bukkit.dispatchCommand(
+                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got banned!"
+        );
+        //Bukkit.getConsoleSender(), "ban " + uuid + " 1m You got banned"
+
+        banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
+        saveBansFile(banFile, banConfig, this);
+
     }
 
 
