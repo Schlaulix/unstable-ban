@@ -21,7 +21,7 @@ public interface SaveReadMethods {
         return banConfig.getInt("bans." + uuid + ".banCount");
     }
 
-    default void playTimeatBan(FileConfiguration banConfig, UUID uuid, long playTimeAtBan) {
+    /*default void playTimeatBan(FileConfiguration banConfig, UUID uuid, long playTimeAtBan) {
         banConfig.set("bans." + uuid + ".playTimeAtBan", playTimeAtBan);
-    }
+    }*/
 }

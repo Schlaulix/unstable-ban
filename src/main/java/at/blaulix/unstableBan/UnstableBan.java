@@ -61,11 +61,16 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     }
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent event) {
+    public void bans(PlayerDeathEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         int currentBanCount = banCount(banConfig, uuid);
         String banDuration = getConfig().getStringList("ban-durations").get(currentBanCount);
+
+        Player killer = event.getPlayer().getKiller();
+        boolean killResetEnabled = getConfig().getBoolean("lose-ban-after-kill");
+
+
         Bukkit.dispatchCommand(
                 Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got banned!"
         );
@@ -73,6 +78,29 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
         saveBansFile(banFile, banConfig, this);
 
+
+        if (killResetEnabled) {
+
+            if (killer != null) {
+                UUID killerUuid = killer.getUniqueId();
+                int killerCurrentBanCount = banCount(banConfig, killerUuid);
+                int banAmountLost = getConfig().getInt("lose-ban-amount-on-kill");
+                int newBanCount;
+
+                if (killerCurrentBanCount > 0) {
+                    if (banAmountLost == -1) {
+                        newBanCount = 0;
+                    } else if (banAmountLost >= 0) {
+                        newBanCount = Math.max(0, killerCurrentBanCount - banAmountLost);
+                    } else {
+                        return;
+                    }
+                    banConfig.set("bans." + killerUuid + ".banCount", newBanCount);
+                    saveBansFile(banFile, banConfig, this);
+                    killer.sendMessage("§aYou have reduced your ban count to " + newBanCount + " by killing " + player.getName() + "!");
+                }
+            }
+        }
     }
 
 
