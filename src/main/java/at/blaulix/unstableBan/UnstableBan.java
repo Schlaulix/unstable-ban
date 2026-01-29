@@ -20,6 +20,8 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
     @Override
     public void onEnable() {
+
+
         banFile = new File(getDataFolder(), "bans.yml");
         saveDefaultConfig();
 
