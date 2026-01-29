@@ -3,9 +3,10 @@ version: '1.0.0'
 main: at.blaulix.unstableBan.UnstableBan
 author: Blaulix
 api-version: '1.21.11'
+softdepend: [LibertyBans]
 
 commands:
   unstableban:
     description: Main command for UnstableBan
     usage: /unstableban <command>
-    aliases: [ub]
+    aliases: [ub, ubreload]
