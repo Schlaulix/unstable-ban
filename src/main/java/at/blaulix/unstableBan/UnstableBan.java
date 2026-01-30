@@ -161,6 +161,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                 if (value <= banTimesLength && value >= 0) {
                     banConfig.set("bans." + targetUuid + ".banCount", value);
                     saveBansFile(banFile, banConfig, this);
+                    sender.sendMessage("§aSet " + targetPlayer.getName() + "'s ban count to " + value + ".");
                 } else {
                     sender.sendMessage("§cThe ban count must be less than " + banTimesLength + " and more than 0.");
                 }
