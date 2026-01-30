@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
@@ -36,6 +37,8 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         getLogger().info("UnstableBan enabled (v" + getPluginMeta().getVersion() + ")");
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(this, this);
+
+        Objects.requireNonNull(getCommand("unstableban")).setTabCompleter(new CommandTabCompleter());
     }
 
     @Override
@@ -116,12 +119,17 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             sender.sendMessage("§6UnstableBan Help:");
             sender.sendMessage("§e/unstableban reload §7- Reload the plugin configuration.");
             sender.sendMessage("§e/unstableban help §7- Show this help message.");
+            sender.sendMessage("§e/unstableban getbans <player> §7- Get the ban count of a player.");
+            sender.sendMessage("§e/unstableban setbans <player> <value> §7- Set the ban count of a player.");
             return true;
         }
 
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+            if(!sender.hasPermission("unstableban.reload")){
+                sender.sendMessage("§cYou don't have permission to use this command.");
+                return true;
+            }
             reloadConfig();
-            banConfig = YamlConfiguration.loadConfiguration(banFile);
             sender.sendMessage("§aUnstableBan Konfiguration neu geladen.");
             return true;
         }
@@ -150,13 +158,14 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                 int value = args[2] != null ? Integer.parseInt(args[2]) : 0;
                 banConfig.set("bans." + targetUuid + ".banCount", value);
                 saveBansFile(banFile, banConfig, this);
+                return true;
             }
         }
 
 
 
 
-        sender.sendMessage("§cUsage /unstableban help");
+        sender.sendMessage("§cFor help use /unstableban help");
         return true;
     }
 }
