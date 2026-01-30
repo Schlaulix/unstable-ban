@@ -116,11 +116,28 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         }
 
         if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
+            if (!sender.hasPermission("unstablenban.help")){
+                sender.sendMessage("§6UnstableBan Help:");
+                sender.sendMessage("§e/unstableban bans §7- Look up how many bans you have.");
+                return true;
+            }
             sender.sendMessage("§6UnstableBan Help:");
+            sender.sendMessage("§e/unstableban bans §7- Look up how many bans you have.");
             sender.sendMessage("§e/unstableban reload §7- Reload the plugin configuration.");
             sender.sendMessage("§e/unstableban help §7- Show this help message.");
             sender.sendMessage("§e/unstableban getbans <player> §7- Get the ban count of a player.");
             sender.sendMessage("§e/unstableban setbans <player> <value> §7- Set the ban count of a player.");
+            return true;
+        }
+
+        if(args.length == 1 && args[0].equalsIgnoreCase("bans")){
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("§cOnly players can use this command.");
+            }else{
+                UUID uuid = player.getUniqueId();
+                int banCount = banCount(banConfig, uuid);
+                player.sendMessage("§aYou have " + banCount + " bans.");
+            }
             return true;
         }
 
