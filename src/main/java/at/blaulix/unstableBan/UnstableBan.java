@@ -23,8 +23,6 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
     @Override
     public void onEnable() {
-
-
         banFile = new File(getDataFolder(), "bans.yml");
         saveDefaultConfig();
 
@@ -114,6 +112,13 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return false;
         }
 
+        if(args.length == 1 && args[0].equalsIgnoreCase("help")) {
+            sender.sendMessage("§6UnstableBan Help:");
+            sender.sendMessage("§e/unstableban reload §7- Reload the plugin configuration.");
+            sender.sendMessage("§e/unstableban help §7- Show this help message.");
+            return true;
+        }
+
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             reloadConfig();
             banConfig = YamlConfiguration.loadConfiguration(banFile);
@@ -121,7 +126,37 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return true;
         }
 
-        sender.sendMessage("§cUsage /unstableban reload");
+        if (args.length == 2 && args[0].equalsIgnoreCase("getbans")){
+            Player targetPlayer = Bukkit.getPlayer(args[1]);
+            if(!sender.hasPermission("unstableban.getbans")){
+                sender.sendMessage("§cYou don't have permission to use this command.");
+                return true;
+            } else if (targetPlayer != null) {
+                UUID targetUuid = targetPlayer.getUniqueId();
+                int banCount = banCount(banConfig, targetUuid);
+                sender.sendMessage("§a" + targetPlayer.getName() + " has " + banCount + " bans.");
+                return true;
+
+            }
+        }
+
+        if (args.length == 3 && args[0].equalsIgnoreCase("setbans")){
+            Player targetPlayer = Bukkit.getPlayer(args[1]);
+            if(!sender.hasPermission("unstableban.setbans")){
+                sender.sendMessage("§cYou don't have permission to use this command.");
+                return true;
+            } else if (targetPlayer != null) {
+                UUID targetUuid = targetPlayer.getUniqueId();
+                int value = args[2] != null ? Integer.parseInt(args[2]) : 0;
+                banConfig.set("bans." + targetUuid + ".banCount", value);
+                saveBansFile(banFile, banConfig, this);
+            }
+        }
+
+
+
+
+        sender.sendMessage("§cUsage /unstableban help");
         return true;
     }
 }
