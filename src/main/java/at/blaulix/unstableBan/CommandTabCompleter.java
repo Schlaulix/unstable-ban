@@ -67,8 +67,7 @@ public class CommandTabCompleter implements TabCompleter {
 
             completions.add("0");
             completions.add("1");
-            completions.add("5");
-            completions.add("10");
+            completions.add("3");
             return completions;
         }
 

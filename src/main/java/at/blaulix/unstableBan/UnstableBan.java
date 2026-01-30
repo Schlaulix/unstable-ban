@@ -115,7 +115,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return false;
         }
 
-        if(args.length == 1 && args[0].equalsIgnoreCase("help")) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
             sender.sendMessage("§6UnstableBan Help:");
             sender.sendMessage("§e/unstableban reload §7- Reload the plugin configuration.");
             sender.sendMessage("§e/unstableban help §7- Show this help message.");
@@ -125,7 +125,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         }
 
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            if(!sender.hasPermission("unstableban.reload")){
+            if (!sender.hasPermission("unstableban.reload")) {
                 sender.sendMessage("§cYou don't have permission to use this command.");
                 return true;
             }
@@ -134,9 +134,9 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return true;
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("getbans")){
+        if (args.length == 2 && args[0].equalsIgnoreCase("getbans")) {
             Player targetPlayer = Bukkit.getPlayer(args[1]);
-            if(!sender.hasPermission("unstableban.getbans")){
+            if (!sender.hasPermission("unstableban.getbans")) {
                 sender.sendMessage("§cYou don't have permission to use this command.");
                 return true;
             } else if (targetPlayer != null) {
@@ -148,21 +148,25 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             }
         }
 
-        if (args.length == 3 && args[0].equalsIgnoreCase("setbans")){
+        if (args.length == 3 && args[0].equalsIgnoreCase("setbans")) {
             Player targetPlayer = Bukkit.getPlayer(args[1]);
-            if(!sender.hasPermission("unstableban.setbans")){
+            if (!sender.hasPermission("unstableban.setbans")) {
                 sender.sendMessage("§cYou don't have permission to use this command.");
                 return true;
             } else if (targetPlayer != null) {
                 UUID targetUuid = targetPlayer.getUniqueId();
+                int banTimesLength = getConfig().getStringList("ban-durations").size();
                 int value = args[2] != null ? Integer.parseInt(args[2]) : 0;
-                banConfig.set("bans." + targetUuid + ".banCount", value);
-                saveBansFile(banFile, banConfig, this);
+
+                if (value <= banTimesLength && value >= 0) {
+                    banConfig.set("bans." + targetUuid + ".banCount", value);
+                    saveBansFile(banFile, banConfig, this);
+                } else {
+                    sender.sendMessage("§cThe ban count must be less than " + banTimesLength + " and more than 0.");
+                }
                 return true;
             }
         }
-
-
 
 
         sender.sendMessage("§cFor help use /unstableban help");
