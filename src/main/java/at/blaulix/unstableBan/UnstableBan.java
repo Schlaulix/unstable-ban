@@ -151,6 +151,17 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return true;
         }
 
+        if (args.length == 1 && args[0].equalsIgnoreCase("bossbar")){
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("§cOnly players can use this command.");
+            }else{
+                BossBarManager bossBarManager = new BossBarManager(this);
+                long time = 720L;
+                bossBarManager.createTimedBossBar(player, time, "§cUnstable Ban BossBar Test");
+            }
+            return true;
+        }
+
         if (args.length == 2 && args[0].equalsIgnoreCase("getbans")) {
             Player targetPlayer = Bukkit.getPlayer(args[1]);
             if (!sender.hasPermission("unstableban.getbans")) {
