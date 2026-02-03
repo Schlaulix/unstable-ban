@@ -18,11 +18,7 @@ public class BossBarManager {
 
     public void createTimedBossBar(Player player, long durationSeconds, String title) {
 
-        BossBar bossBar = Bukkit.createBossBar(
-                title,
-                BarColor.RED,
-                BarStyle.SOLID
-        );
+        BossBar bossBar = Bukkit.createBossBar(title, BarColor.RED, BarStyle.SOLID);
 
         bossBar.addPlayer(player);
         bossBar.setProgress(1.0);
