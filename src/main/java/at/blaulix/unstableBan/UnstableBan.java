@@ -151,7 +151,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return true;
         }
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("bossbar")){
+        if (args.length == 1 && args[0].equalsIgnoreCase("togglebossbar")){
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("§cOnly players can use this command.");
             }else{

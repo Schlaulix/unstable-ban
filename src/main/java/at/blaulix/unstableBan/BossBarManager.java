@@ -50,6 +50,7 @@ public class BossBarManager {
         }.runTaskTimer(plugin, 0L, 20L); // 20 Ticks = 1 Sekunde
     }
 
+
     private String formatTime(long seconds) {
         long hours = seconds / 3600;
         long minutes = (seconds % 3600) / 60;

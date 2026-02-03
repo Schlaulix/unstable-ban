@@ -29,6 +29,7 @@ public class CommandTabCompleter implements TabCompleter {
         if (args.length == 1) {
             completions.add("help");
             completions.add("bans");
+            completions.add("togglebossbar");
 
             if (sender.hasPermission("unstableban.reload")) {
                 completions.add("reload");
