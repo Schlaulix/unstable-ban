@@ -1,6 +1,7 @@
 package at.blaulix.unstableBan;
 
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
     private FileConfiguration banConfig;
     private File banFile;
+    BanCountdown banCountdown = new BanCountdown();
 
     @Override
     public void onEnable() {
@@ -109,6 +112,19 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         }
     }
 
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        String banLoseAfter = getConfig().getString("lose-ban-after-duration");
+
+        if (banLoseAfter == null || banLoseAfter.isEmpty()) {
+            return;
+        }
+        int banLoseAfterSeconds = TimeFormatter.formatToSeconds(banLoseAfter);
+
+        banCountdown.startBanCountdown(player, banLoseAfterSeconds, this);
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String @NotNull [] args) {
         if (!command.getName().equalsIgnoreCase("unstableban")) {
@@ -116,7 +132,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         }
 
         if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
-            if (!sender.hasPermission("unstablenban.help")){
+            if (!sender.hasPermission("unstablenban.help")) {
                 sender.sendMessage("§6UnstableBan Help:");
                 sender.sendMessage("§e/unstableban bans §7- Look up how many bans you have.");
                 return true;
@@ -130,10 +146,10 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return true;
         }
 
-        if(args.length == 1 && args[0].equalsIgnoreCase("bans")){
+        if (args.length == 1 && args[0].equalsIgnoreCase("bans")) {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage("§cOnly players can use this command.");
-            }else{
+            } else {
                 UUID uuid = player.getUniqueId();
                 int banCount = banCount(banConfig, uuid);
                 player.sendMessage("§aYou have " + banCount + " bans.");
@@ -151,13 +167,12 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             return true;
         }
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("togglebossbar")){
-            if (!(sender instanceof Player player)) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("togglebossbar")) {
+            if (!(sender instanceof Player)) {
                 sender.sendMessage("§cOnly players can use this command.");
-            }else{
+            } else {
                 BossBarManager bossBarManager = new BossBarManager(this);
-                long time = 720L;
-                bossBarManager.createTimedBossBar(player, time, "§cUnstable Ban BossBar Test");
+                bossBarManager.toggleVisibility((BossBar) banCountdown);
             }
             return true;
         }

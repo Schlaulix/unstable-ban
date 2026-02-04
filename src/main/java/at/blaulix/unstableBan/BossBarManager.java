@@ -46,8 +46,12 @@ public class BossBarManager {
         }.runTaskTimer(plugin, 0L, 20L); // 20 Ticks = 1 Sekunde
     }
 
+    public void toggleVisibility(BossBar bossBar) {
+        bossBar.setVisible(!bossBar.isVisible());
+    }
 
-    private String formatTime(long seconds) {
+
+    public String formatTime(long seconds) {
         long hours = seconds / 3600;
         long minutes = (seconds % 3600) / 60;
         long secs = seconds % 60;

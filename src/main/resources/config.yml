@@ -1,3 +1,7 @@
+# Configuration file for the Ban System plugin
+
+# You need https://libertybans.org/ for this plugin to work!
+# m = minutes, h = hours, d = days, mo = months
 ban-durations:
     - "10m"
     - "1h"
@@ -8,11 +12,13 @@ ban-durations:
 # Should someone lose one ban after a certain time period? So if the counter is on 2 and the time period passes,
 # the counter will go down to 1 and the next ban will only last 1h instead of 6h.
 
-#use -1 to remove all bans after the time period
 lose-ban-after-time: true
+# s = seconds, m = minutes, h = hours, d = days
 lose-ban-after-duration: "2h"
+# use -1 to remove all bans after the time period
 lose-ban-amount: 1
 
-
+# Should someone lose ban(s) after getting a kill?
 lose-ban-after-kill: true
+# use -1 to remove all bans after the time period
 lose-ban-amount-on-kill: -1
