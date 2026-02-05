@@ -15,6 +15,7 @@ public class BossBarManager {
 
     private final Map<Player, BossBar> bars = new HashMap<>();
 
+
     public void createBossBar(Player player, String title) {
         BossBar bossBar = Bukkit.createBossBar(title, BarColor.RED, BarStyle.SOLID);
         bossBar.setProgress(1.0);
@@ -54,6 +55,7 @@ public class BossBarManager {
         UUID uuid = player.getUniqueId();
         banConfig.set("bans." + uuid + ".timeLeft", seconds);
     }
+
 
     public String formatTime(long seconds) {
         long hours = seconds / 3600;

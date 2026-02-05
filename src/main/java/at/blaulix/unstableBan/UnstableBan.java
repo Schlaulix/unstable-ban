@@ -11,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +43,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         Objects.requireNonNull(getCommand("unstableban")).setTabCompleter(new CommandTabCompleter());
 
         BossBarManager bossBarManager = new BossBarManager();
-        banCountdown = new BanCountdown(bossBarManager);
+        banCountdown = new BanCountdown(bossBarManager, this);
     }
 
     @Override
@@ -61,22 +60,38 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+        boolean timeResetEnabled = getConfig().getBoolean("lose-ban-after-time");
 
         int banTimesLength = getConfig().getStringList("ban-durations").size();
         String path = "bans." + uuid;
+        int playerBanCount = banCount(banConfig, uuid);
 
-        if (!banConfig.contains(path) || banCount(banConfig, uuid) >= banTimesLength) {
-
+        if (!banConfig.contains(path) || playerBanCount >= banTimesLength) {
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
         }
 
-        if (banConfig.contains(path + ".timeLeft")) {
-            long timeLeft = banConfig.getLong(path + ".timeLeft");
-            if (timeLeft > 0) {
-                banCountdown.startBanCountdown(player, (int) timeLeft, this);
+        if(timeResetEnabled) {
+            if (playerBanCount > 0) {
+                long timeLeft = banConfig.getLong(path + ".timeLeft");
+                if (timeLeft > 0) {
+                    banCountdown.startBanCountdown(player, (int) timeLeft, this);
+                } else {
+                    String banLoseAfter = getConfig().getString("lose-ban-after-duration");
+
+                    if (banLoseAfter == null || banLoseAfter.isEmpty()) {
+                        return;
+                    }
+                    int banLoseAfterSeconds = TimeFormatter.formatToSeconds(banLoseAfter);
+
+                    banCountdown.startBanCountdown(player, banLoseAfterSeconds, this);
+                }
+            } else {
+                banConfig.set(path + ".timeLeft", 0);
+                saveBansFile(banFile, banConfig, this);
             }
         }
+
     }
 
     @EventHandler
@@ -123,19 +138,6 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     }
 
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        String banLoseAfter = getConfig().getString("lose-ban-after-duration");
-
-        if (banLoseAfter == null || banLoseAfter.isEmpty()) {
-            return;
-        }
-        int banLoseAfterSeconds = TimeFormatter.formatToSeconds(banLoseAfter);
-
-        banCountdown.startBanCountdown(player, banLoseAfterSeconds, this);
-    }
-
-    @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         banCountdown.saveSecondsLeft(player, banConfig);
@@ -152,15 +154,16 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
             if (!sender.hasPermission("unstablenban.help")) {
                 sender.sendMessage("§6UnstableBan Help:");
-                sender.sendMessage("§e/unstableban bans §7- Look up how many bans you have.");
+                sender.sendMessage("§eYou can use /ub or /unstableban for the commands.");
+                sender.sendMessage("§e/ub bans §7- Look up how many bans you have.");
                 return true;
             }
             sender.sendMessage("§6UnstableBan Help:");
-            sender.sendMessage("§e/unstableban bans §7- Look up how many bans you have.");
-            sender.sendMessage("§e/unstableban reload §7- Reload the plugin configuration.");
-            sender.sendMessage("§e/unstableban help §7- Show this help message.");
-            sender.sendMessage("§e/unstableban getbans <player> §7- Get the ban count of a player.");
-            sender.sendMessage("§e/unstableban setbans <player> <value> §7- Set the ban count of a player.");
+            sender.sendMessage("§e/ub bans §7- Look up how many bans you have.");
+            sender.sendMessage("§e/ub reload §7- Reload the plugin configuration.");
+            sender.sendMessage("§e/ub help §7- Show this help message.");
+            sender.sendMessage("§e/ub getbans <player> §7- Get the ban count of a player.");
+            sender.sendMessage("§e/ub setbans <player> <value> §7- Set the ban count of a player.");
             return true;
         }
 
@@ -181,7 +184,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                 return true;
             }
             reloadConfig();
-            sender.sendMessage("§aUnstableBan Konfiguration neu geladen.");
+            sender.sendMessage("§aReloaded UnstableBan Config.");
             return true;
         }
 
@@ -234,5 +237,19 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
         sender.sendMessage("§cFor help use /unstableban help");
         return true;
+    }
+
+    public void reduceBanCount(UUID uuid) {
+        int currentBanCount = banCount(banConfig, uuid);
+
+        if (currentBanCount > 0) {
+            banConfig.set("bans." + uuid + ".banCount", currentBanCount - 1);
+            banConfig.set("bans." + uuid + ".timeLeft", null);
+            saveBansFile(banFile, banConfig, this);
+        }
+    }
+
+    public FileConfiguration getBanConfig() {
+        return banConfig;
     }
 }
