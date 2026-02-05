@@ -1,68 +1,67 @@
 package at.blaulix.unstableBan;
 
+import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class BossBarManager {
 
-    private final JavaPlugin plugin;
+    private final Map<Player, BossBar> bars = new HashMap<>();
 
-    public BossBarManager(JavaPlugin plugin) {
-        this.plugin = plugin;
-    }
-
-    public void createTimedBossBar(Player player, long durationSeconds, String title) {
-
+    public void createBossBar(Player player, String title) {
         BossBar bossBar = Bukkit.createBossBar(title, BarColor.RED, BarStyle.SOLID);
-
-        bossBar.addPlayer(player);
         bossBar.setProgress(1.0);
-
-        new BukkitRunnable() {
-
-            long timeLeft = durationSeconds;
-
-            @Override
-            public void run() {
-                if (timeLeft <= 0 || !player.isOnline()) {
-                    bossBar.removeAll();
-                    cancel();
-                    return;
-                }
-
-                double progress = (double) timeLeft / durationSeconds;
-                bossBar.setProgress(progress);
-
-                bossBar.setTitle(title + " §7(" + formatTime(timeLeft) + ")");
-
-                timeLeft--;
-            }
-
-        }.runTaskTimer(plugin, 0L, 20L); // 20 Ticks = 1 Sekunde
+        bossBar.addPlayer(player);
+        bars.put(player, bossBar);
     }
 
-    public void toggleVisibility(BossBar bossBar) {
-        bossBar.setVisible(!bossBar.isVisible());
+    public void update(Player player, String title, double progress) {
+        BossBar bossBar = bars.get(player);
+        if (bossBar == null) return;
+
+        bossBar.setTitle(title);
+        bossBar.setProgress(Math.max(0.0, Math.min(1.0, progress)));
     }
 
+    public void removeBossBar(Player player) {
+        BossBar bossBar = bars.remove(player);
+        if (bossBar != null) {
+            bossBar.removeAll();
+        }
+    }
+
+    public void toggleVisibility(Player player) {
+        BossBar bossBar = bars.get(player);
+        if (bossBar != null) {
+            bossBar.setVisible(!bossBar.isVisible());
+        }
+    }
+
+    public boolean isActive(Player player) {
+        BossBar bossBar = bars.get(player);
+        return bossBar != null && bossBar.isVisible();
+    }
+
+    public void saveSecondsLeft(Player player, long seconds, FileConfiguration banConfig) {
+
+        UUID uuid = player.getUniqueId();
+        banConfig.set("bans." + uuid + ".timeLeft", seconds);
+    }
 
     public String formatTime(long seconds) {
         long hours = seconds / 3600;
         long minutes = (seconds % 3600) / 60;
         long secs = seconds % 60;
 
-        if (hours > 0) {
-            return hours + "h " + minutes + "m";
-        }
-        if (minutes > 0) {
-            return minutes + "m " + secs + "s";
-        }
+        if (hours > 0) return hours + "h " + minutes + "m";
+        if (minutes > 0) return minutes + "m " + secs + "s";
         return secs + "s";
     }
 }
-

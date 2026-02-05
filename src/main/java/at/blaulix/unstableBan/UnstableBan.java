@@ -1,7 +1,6 @@
 package at.blaulix.unstableBan;
 
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,7 +23,7 @@ import java.util.UUID;
 public final class UnstableBan extends JavaPlugin implements Listener, SaveReadMethods {
     private FileConfiguration banConfig;
     private File banFile;
-    BanCountdown banCountdown = new BanCountdown();
+    private BanCountdown banCountdown;
 
     @Override
     public void onEnable() {
@@ -42,6 +42,9 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         pluginManager.registerEvents(this, this);
 
         Objects.requireNonNull(getCommand("unstableban")).setTabCompleter(new CommandTabCompleter());
+
+        BossBarManager bossBarManager = new BossBarManager();
+        banCountdown = new BanCountdown(bossBarManager);
     }
 
     @Override
@@ -66,6 +69,13 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
+        }
+
+        if (banConfig.contains(path + ".timeLeft")) {
+            long timeLeft = banConfig.getLong(path + ".timeLeft");
+            if (timeLeft > 0) {
+                banCountdown.startBanCountdown(player, (int) timeLeft, this);
+            }
         }
     }
 
@@ -125,6 +135,14 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         banCountdown.startBanCountdown(player, banLoseAfterSeconds, this);
     }
 
+    @EventHandler
+    public void onLeave(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        banCountdown.saveSecondsLeft(player, banConfig);
+        saveBansFile(banFile, banConfig, this);
+
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String @NotNull [] args) {
         if (!command.getName().equalsIgnoreCase("unstableban")) {
@@ -168,11 +186,12 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         }
 
         if (args.length == 1 && args[0].equalsIgnoreCase("togglebossbar")) {
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player player)) {
                 sender.sendMessage("§cOnly players can use this command.");
+            } else if (banCountdown.isActive(player)) {
+                banCountdown.toggleVisibility(player);
             } else {
-                BossBarManager bossBarManager = new BossBarManager(this);
-                bossBarManager.toggleVisibility((BossBar) banCountdown);
+                sender.sendMessage("§cYou don't have an active ban countdown.");
             }
             return true;
         }
