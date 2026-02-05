@@ -241,9 +241,16 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
     public void reduceBanCount(UUID uuid) {
         int currentBanCount = banCount(banConfig, uuid);
+        int loseBanAmount = getConfig().getInt("lose-ban-amount");
+        int banAmount;
 
         if (currentBanCount > 0) {
-            banConfig.set("bans." + uuid + ".banCount", currentBanCount - 1);
+            if (loseBanAmount == -1) {
+                banAmount = 0;
+            }else{
+                banAmount = Math.max(0, currentBanCount - loseBanAmount);
+            }
+            banConfig.set("bans." + uuid + ".banCount", banAmount);
             banConfig.set("bans." + uuid + ".timeLeft", null);
             saveBansFile(banFile, banConfig, this);
         }
