@@ -1,6 +1,8 @@
 package at.blaulix.unstableBan;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -71,7 +73,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             saveBansFile(banFile, banConfig, this);
         }
 
-        if(timeResetEnabled) {
+        if (timeResetEnabled) {
             if (playerBanCount > 0) {
                 long timeLeft = banConfig.getLong(path + ".timeLeft");
                 if (timeLeft > 0) {
@@ -100,14 +102,27 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         UUID uuid = player.getUniqueId();
         int currentBanCount = banCount(banConfig, uuid);
         String banDuration = getConfig().getStringList("ban-durations").get(currentBanCount);
+        int radius = getConfig().getInt("death-radius");
+
+        Component deathMessage = event.deathMessage();
+        event.deathMessage(null);
 
         Player killer = event.getPlayer().getKiller();
         boolean killResetEnabled = getConfig().getBoolean("lose-ban-after-kill");
 
+        player.getWorld().getPlayers().forEach(p -> {
+            if (p.getLocation().distanceSquared(player.getLocation()) <= radius * radius) {
+                p.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
+
+                if (deathMessage != null) {
+                    p.sendMessage(deathMessage);
+                }
+            }
+        });
 
         Bukkit.dispatchCommand(
-                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got banned!"
-        );
+
+                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got banned!");
 
         banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
         saveBansFile(banFile, banConfig, this);
@@ -247,7 +262,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         if (currentBanCount > 0) {
             if (loseBanAmount == -1) {
                 banAmount = 0;
-            }else{
+            } else {
                 banAmount = Math.max(0, currentBanCount - loseBanAmount);
             }
             banConfig.set("bans." + uuid + ".banCount", banAmount);

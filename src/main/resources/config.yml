@@ -8,6 +8,8 @@ ban-durations:
     - "6h"
     - "24h"
     - "7d"
+# The radius in which the death message/sound will be seen/heard when someone dies. 1 = 1 Block
+death-sound-radius: 100
 
 # Should someone lose one ban after a certain time period? So if the counter is on 2 and the time period passes,
 # the counter will go down to 1 and the next ban will only last 1h instead of 6h.
