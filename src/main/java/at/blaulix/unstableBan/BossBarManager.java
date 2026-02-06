@@ -9,15 +9,28 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BossBarManager {
-
     private final Map<Player, BossBar> bars = new HashMap<>();
+    private final BarColor bossBarColor;
 
+    public BossBarManager(UnstableBan plugin) {
+
+        String colorName = Objects.requireNonNull(plugin.getConfig().getString("countdown-bossbar-color")).toUpperCase();
+        BarColor color;
+        try {
+            color = BarColor.valueOf(colorName);
+        } catch (IllegalArgumentException e) {
+            color = BarColor.RED;
+        }
+
+        this.bossBarColor = color;
+    }
 
     public void createBossBar(Player player, String title) {
-        BossBar bossBar = Bukkit.createBossBar(title, BarColor.RED, BarStyle.SOLID);
+        BossBar bossBar = Bukkit.createBossBar(title, bossBarColor, BarStyle.SOLID);
         bossBar.setProgress(1.0);
         bossBar.addPlayer(player);
         bars.put(player, bossBar);

@@ -17,6 +17,8 @@ lose-ban-after-time: true
 lose-ban-after-duration: "2h"
 # use -1 to remove all bans after the time period
 lose-ban-amount: 1
+# the color of the countdown boss bar
+countdown-bossbar-color: "RED"
 
 # Should someone lose ban(s) after getting a kill?
 lose-ban-after-kill: true

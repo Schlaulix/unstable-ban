@@ -29,7 +29,7 @@ public class BanCountdown {
 
     public void startBanCountdown(Player player, int banLoseAfter, JavaPlugin pluginInstance) {
 
-        BossBarManager bossBarManager = new BossBarManager();
+        BossBarManager bossBarManager = new BossBarManager(plugin);
         String title = "§cUnstable Ban §7(You will lose your ban in " + bossBarManager.formatTime(banLoseAfter) + ")";
         bossBarManager.createBossBar(player, title);
 

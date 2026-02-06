@@ -42,7 +42,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
         Objects.requireNonNull(getCommand("unstableban")).setTabCompleter(new CommandTabCompleter());
 
-        BossBarManager bossBarManager = new BossBarManager();
+        BossBarManager bossBarManager = new BossBarManager(this);
         banCountdown = new BanCountdown(bossBarManager, this);
     }
 
