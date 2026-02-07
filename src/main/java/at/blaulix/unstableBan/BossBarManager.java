@@ -59,8 +59,7 @@ public class BossBarManager {
     }
 
     public boolean isActive(Player player) {
-        BossBar bossBar = bars.get(player);
-        return bossBar != null && bossBar.isVisible();
+        return bars.containsKey(player);
     }
 
     public void saveSecondsLeft(Player player, long seconds, FileConfiguration banConfig) {

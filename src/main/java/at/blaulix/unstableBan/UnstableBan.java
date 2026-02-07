@@ -77,7 +77,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             if (playerBanCount > 0) {
                 long timeLeft = banConfig.getLong(path + ".timeLeft");
                 if (timeLeft > 0) {
-                    banCountdown.startBanCountdown(player, (int) timeLeft, this);
+                    banCountdown.startBanCountdown(player, (int) timeLeft);
                 } else {
                     String banLoseAfter = getConfig().getString("lose-ban-after-duration");
 
@@ -86,7 +86,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                     }
                     int banLoseAfterSeconds = TimeFormatter.formatToSeconds(banLoseAfter);
 
-                    banCountdown.startBanCountdown(player, banLoseAfterSeconds, this);
+                    banCountdown.startBanCountdown(player, banLoseAfterSeconds);
                 }
             } else {
                 banConfig.set(path + ".timeLeft", 0);
@@ -145,6 +145,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                         return;
                     }
                     banConfig.set("bans." + killerUuid + ".banCount", newBanCount);
+                    banConfig.set("bans." + killerUuid + ".timeLeft", null);
                     saveBansFile(banFile, banConfig, this);
                     killer.sendMessage("§aYou have reduced your ban count to " + newBanCount + " by killing " + player.getName() + "!");
                 }
@@ -171,12 +172,14 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                 sender.sendMessage("§6UnstableBan Help:");
                 sender.sendMessage("§eYou can use /ub or /unstableban for the commands.");
                 sender.sendMessage("§e/ub bans §7- Look up how many bans you have.");
+                sender.sendMessage("§e/ub togglebossbar §7- Toggle the visibility of your ban countdown bossbar if you have bans.");
                 return true;
             }
             sender.sendMessage("§6UnstableBan Help:");
+            sender.sendMessage("§e/ub help §7- Show this help message.");
             sender.sendMessage("§e/ub bans §7- Look up how many bans you have.");
             sender.sendMessage("§e/ub reload §7- Reload the plugin configuration.");
-            sender.sendMessage("§e/ub help §7- Show this help message.");
+            sender.sendMessage("§e/ub togglebossbar §7- Toggle the visibility of your ban countdown bossbar if you have bans.");
             sender.sendMessage("§e/ub getbans <player> §7- Get the ban count of a player.");
             sender.sendMessage("§e/ub setbans <player> <value> §7- Set the ban count of a player.");
             return true;
@@ -240,6 +243,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
                 if (value <= banTimesLength && value >= 0) {
                     banConfig.set("bans." + targetUuid + ".banCount", value);
+                    banConfig.set("bans." + targetUuid + ".timeLeft", null);
                     saveBansFile(banFile, banConfig, this);
                     sender.sendMessage("§aSet " + targetPlayer.getName() + "'s ban count to " + value + ".");
                 } else {

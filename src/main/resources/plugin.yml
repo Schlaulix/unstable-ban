@@ -9,4 +9,4 @@ commands:
   unstableban:
     description: Main command for UnstableBan
     usage: /unstableban <command>
-    aliases: [ub, ubreload]
+    aliases: [ub]
