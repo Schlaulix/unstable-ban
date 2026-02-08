@@ -2,6 +2,7 @@
 
 # You need https://libertybans.org/ for this plugin to work!
 # m = minutes, h = hours, d = days, mo = months
+# for permanent bans, delete all durations, except the first one, and set it to "perm"
 ban-durations:
     - "10m"
     - "1h"
@@ -9,7 +10,7 @@ ban-durations:
     - "24h"
     - "7d"
 # The radius in which the death message/sound will be seen/heard when someone dies. 1 = 1 Block
-death-sound-radius: 100
+death-radius: 100
 
 # Should someone lose one ban after a certain time period? So if the counter is on 2 and the time period passes,
 # the counter will go down to 1 and the next ban will only last 1h instead of 6h.
@@ -19,7 +20,7 @@ lose-ban-after-time: true
 lose-ban-after-duration: "2h"
 # use -1 to remove all bans after the time period
 lose-ban-amount: 1
-# the color of the countdown boss bar
+# the color of the countdown boss bar - possible values: "WHITE", "GREEN", "PINK", "BLUE", "YELLOW", "RED", "PURPLE"
 countdown-bossbar-color: "RED"
 
 # Should someone lose ban(s) after getting a kill?
