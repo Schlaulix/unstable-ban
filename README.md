@@ -128,6 +128,23 @@ Every decision matters.
 
 ---
 
+# 📋 Commands — Unstable Ban
+
+| Command                       | Function                                                                 | Permission                     |
+|-------------------------------|--------------------------------------------------------------------------|-------------------------------|
+| `/unstableban bans`            | Check your own current ban count                                         | player only           |
+| `/ub bans`                     | Alias for `/unstableban bans`                                            | player only            |
+| `/unstableban togglebossbar`   | Toggle visibility of your ban countdown bossbar if you have bans         | player only            |
+| `/ub togglebossbar`            | Alias for `/unstableban togglebossbar`                                   | player only            |
+| `/unstableban help`            | Show the help message with all available commands                        | `unstableban.help`            |
+| `/ub help`                     | Alias for `/unstableban help`                                            | `unstableban.help`            |
+| `/unstableban reload`          | Reload the plugin configuration                                          | `unstableban.reload`          |
+| `/ub reload`                   | Alias for `/unstableban reload`                                          | `unstableban.reload`          |
+| `/unstableban getbans <player>`| Get the current ban count of a specific player                            | `unstableban.getbans`         |
+| `/unstableban setbans <player> <value>` | Set the ban count of a specific player                           | `unstableban.setbans`         |
+
+---
+
 ## 📦 Installation
 
 1. Place `unstable-ban` in your `plugins/` folder  
