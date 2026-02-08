@@ -9,8 +9,15 @@ ban-durations:
     - "6h"
     - "24h"
     - "7d"
+
+
 # The radius in which the death message/sound will be seen/heard when someone dies. 1 = 1 Block
 death-radius: 100
+# Should the plugin send a death message in the chat and/or play a sound when someone dies?
+death-message: true
+death-sound: true
+# Only use sounds that are listet in https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+death-sound-type: ENTITY_WITHER_SPAWN
 
 # Should someone lose one ban after a certain time period? So if the counter is on 2 and the time period passes,
 # the counter will go down to 1 and the next ban will only last 1h instead of 6h.
@@ -20,6 +27,8 @@ lose-ban-after-time: true
 lose-ban-after-duration: "2h"
 # use -1 to remove all bans after the time period
 lose-ban-amount: 1
+# The title on top oft the boss bar, use %time% to show the remaining time until the next ban is removed
+countdown-bossbar-title: "You will lose a ban in %time%"
 # the color of the countdown boss bar - possible values: "WHITE", "GREEN", "PINK", "BLUE", "YELLOW", "RED", "PURPLE"
 countdown-bossbar-color: "RED"
 

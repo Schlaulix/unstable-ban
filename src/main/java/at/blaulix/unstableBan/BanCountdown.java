@@ -12,10 +12,17 @@ public class BanCountdown {
     private final BossBarManager bossBarManager;
     private final UnstableBan plugin;
     private long timeLeftSave;
+    String configTitle;
+
 
     public BanCountdown(BossBarManager bossBarManager, UnstableBan plugin) {
         this.bossBarManager = bossBarManager;
         this.plugin = plugin;
+
+        configTitle = plugin.getConfig().getString("countdown-bossbar-title");
+        if (configTitle == null || configTitle.isEmpty()) {
+            configTitle = "§cUnstable Ban §7(You will lose your ban in %time%)";
+        }
     }
 
     public void toggleVisibility(Player player) {
@@ -63,7 +70,8 @@ public class BanCountdown {
 
                 double progress = (double) timeLeft / configTime;
 
-                bossBarManager.update(player, "§cUnstable Ban §7(You will lose your ban in " + bossBarManager.formatTime(timeLeft) + ")", progress);
+
+                bossBarManager.update(player, configTitle.replace("%time%", bossBarManager.formatTime(timeLeft)), progress);
 
                 timeLeft--;
                 timeLeftSave = timeLeft;

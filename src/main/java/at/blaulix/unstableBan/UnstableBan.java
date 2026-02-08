@@ -2,6 +2,8 @@ package at.blaulix.unstableBan;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -109,13 +111,33 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
         Player killer = event.getPlayer().getKiller();
         boolean killResetEnabled = getConfig().getBoolean("lose-ban-after-kill");
+        String soundName = getConfig().getString("death-sound");
+
+        assert soundName != null;
+        NamespacedKey key = NamespacedKey.fromString(soundName.toLowerCase());
+        Sound deathSound;
+
+        if (key != null) {
+            deathSound = Registry.SOUNDS.get(key);
+        } else {
+            deathSound = Sound.ENTITY_WITHER_SPAWN;
+        }
+
+        boolean deathSoundEnabled = getConfig().getBoolean("death-sound");
+        boolean deathMessageEnabled = getConfig().getBoolean("death-message");
 
         player.getWorld().getPlayers().forEach(p -> {
             if (p.getLocation().distanceSquared(player.getLocation()) <= radius * radius) {
-                p.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
+                if (deathSound != null) {
+                    if (deathSoundEnabled) {
+                        p.playSound(player.getLocation(), deathSound, 1.0f, 1.0f);
+                    }
+                }
 
                 if (deathMessage != null) {
-                    p.sendMessage(deathMessage);
+                    if (deathMessageEnabled) {
+                        p.sendMessage(deathMessage);
+                    }
                 }
             }
         });
