@@ -19,9 +19,10 @@ public class BanCountdown {
         this.bossBarManager = bossBarManager;
         this.plugin = plugin;
 
+        int banLoseAfterTime = plugin.getConfig().getInt("lose-ban-amount");
         configTitle = plugin.getConfig().getString("countdown-bossbar-title");
         if (configTitle == null || configTitle.isEmpty()) {
-            configTitle = "§cUnstable Ban §7(You will lose your ban in %time%)";
+            configTitle = "§cYou will lose " + banLoseAfterTime + " ban(s) in %time%";
         }
     }
 

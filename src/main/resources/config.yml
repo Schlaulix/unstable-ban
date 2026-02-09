@@ -27,8 +27,9 @@ lose-ban-after-time: true
 lose-ban-after-duration: "2h"
 # use -1 to remove all bans after the time period
 lose-ban-amount: 1
-# The title on top oft the boss bar, use %time% to show the remaining time until the next ban is removed
-countdown-bossbar-title: "You will lose a ban in %time%"
+# The title on top oft the boss bar
+# Use %time% to show the remaining time until the next ban is removed
+countdown-bossbar-title: "§cYou will lose one ban in %time%"
 # the color of the countdown boss bar - possible values: "WHITE", "GREEN", "PINK", "BLUE", "YELLOW", "RED", "PURPLE"
 countdown-bossbar-color: "RED"
 
