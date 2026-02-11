@@ -1,5 +1,5 @@
 name: UnstableBan
-version: '1.0.1'
+version: '1.1.0'
 main: at.blaulix.unstableBan.UnstableBan
 author: Blaulix
 api-version: '1.21.11'
