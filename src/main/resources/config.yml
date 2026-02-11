@@ -1,6 +1,9 @@
 # Configuration file for the Ban System plugin
 
 # You need https://libertybans.org/ for this plugin to work!
+# The reason the player should see if he dies
+ban-reason: "You died!"
+
 # m = minutes, h = hours, d = days, mo = months
 # for permanent bans, delete all durations, except the first one, and set it to "perm"
 ban-durations:
@@ -12,8 +15,8 @@ ban-durations:
 
 
 # The radius in which the death message/sound will be seen/heard when someone dies. 1 = 1 Block
-death-radius: 100
-# Should the plugin send a death message in the chat and/or play a sound when someone dies?
+death-radius: 1000
+# Should the plugin send a death message in the chat and/or play a sound when someone dies ONLY IN THE ASSIGNED RADIUS?
 death-message: true
 death-sound: true
 # Only use sounds that are listet in https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
@@ -37,3 +40,11 @@ countdown-bossbar-color: "RED"
 lose-ban-after-kill: true
 # use -1 to remove all bans after the time period
 lose-ban-amount-on-kill: -1
+
+# Join and Leave Messages
+# Should leave messages only be sent to players in a certain radius around the player who left?
+leave-msg-radius-enabled: true
+leave-msg-radius: 1000
+# Should join messages only be sent to players in a certain radius around the player who joined?
+join-msg-radius-enabled: true
+join-msg-radius: 1000

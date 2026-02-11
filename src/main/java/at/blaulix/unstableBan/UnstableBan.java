@@ -96,6 +96,21 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             }
         }
 
+        boolean joinMsgRadiusEnabled = getConfig().getBoolean("join-msg-radius-enabled");
+        int joinRadius = getConfig().getInt("join-msg-radius");
+
+        player.getWorld().getPlayers().forEach(p -> {
+            if (p.getLocation().distanceSquared(player.getLocation()) <= joinRadius * joinRadius) {
+                if (joinMsgRadiusEnabled) {
+                    Component joinMsg = event.joinMessage();
+                    event.joinMessage(null);
+                    if (joinMsg != null) {
+                        p.sendMessage(joinMsg);
+                    }
+                }
+            }
+        });
+
     }
 
     @EventHandler
@@ -103,11 +118,10 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         int currentBanCount = banCount(banConfig, uuid);
+        String banReason = getConfig().getString("ban-reason");
         String banDuration = getConfig().getStringList("ban-durations").get(currentBanCount);
         int radius = getConfig().getInt("death-radius");
 
-        Component deathMessage = event.deathMessage();
-        event.deathMessage(null);
 
         Player killer = event.getPlayer().getKiller();
         boolean killResetEnabled = getConfig().getBoolean("lose-ban-after-kill");
@@ -128,14 +142,16 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
         player.getWorld().getPlayers().forEach(p -> {
             if (p.getLocation().distanceSquared(player.getLocation()) <= radius * radius) {
-                if (deathSound != null) {
-                    if (deathSoundEnabled) {
+                if (deathSoundEnabled) {
+                    if (deathSound != null) {
                         p.playSound(player.getLocation(), deathSound, 1.0f, 1.0f);
                     }
                 }
 
-                if (deathMessage != null) {
-                    if (deathMessageEnabled) {
+                if (deathMessageEnabled) {
+                    Component deathMessage = event.deathMessage();
+                    event.deathMessage(null);
+                    if (deathMessage != null) {
                         p.sendMessage(deathMessage);
                     }
                 }
@@ -144,7 +160,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
         Bukkit.dispatchCommand(
 
-                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " You got banned!");
+                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " " + banReason);
 
         banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
         saveBansFile(banFile, banConfig, this);
@@ -178,9 +194,22 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        boolean leaveMsgRadiusEnabled = getConfig().getBoolean("leave-msg-radius-enabled");
+        int leaveRadius = getConfig().getInt("leave-msg-radius");
+
+        player.getWorld().getPlayers().forEach(p -> {
+            if (p.getLocation().distanceSquared(player.getLocation()) <= leaveRadius * leaveRadius) {
+                if (leaveMsgRadiusEnabled) {
+                    Component leaveMessage = event.quitMessage();
+                    event.quitMessage(null);
+                    if (leaveMessage != null) {
+                        p.sendMessage(leaveMessage);
+                    }
+                }
+            }
+        });
         banCountdown.saveSecondsLeft(player, banConfig);
         saveBansFile(banFile, banConfig, this);
-
     }
 
     @Override
