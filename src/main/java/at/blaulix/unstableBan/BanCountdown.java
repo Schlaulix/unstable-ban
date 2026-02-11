@@ -38,6 +38,7 @@ public class BanCountdown {
 
         String title = "§cUnstable Ban §7(You will lose your ban in " + bossBarManager.formatTime(banLoseAfter) + ")";
         bossBarManager.createBossBar(player, title);
+        UUID uuid = player.getUniqueId();
 
         int configTime = TimeFormatter.formatToSeconds(Objects.requireNonNull(plugin.getConfig().getString("lose-ban-after-duration")));
         new BukkitRunnable() {
@@ -51,6 +52,13 @@ public class BanCountdown {
                     cancel();
                     return;
                 }
+                int currentBanCount = plugin.banCount(plugin.getBanConfig(), uuid);
+                if (currentBanCount <= 0) {
+                    bossBarManager.removeBossBar(player);
+                    cancel();
+                    return;
+                }
+
                 if (timeLeft <= 0) {
                     bossBarManager.removeBossBar(player);
 

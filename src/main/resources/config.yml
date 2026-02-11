@@ -2,8 +2,12 @@
 
 # You need https://libertybans.org/ for this plugin to work!
 # The reason the player should see if he dies
-ban-reason: "You died!"
-
+# %player% = the name of the player who died
+# %killer% = the name of the player who killed the player (if there is one)
+# %banCount% = the amount of bans the player has after being killed
+ban-reason: "You were killed by %killer%!"
+# when there is no killer, the player should see this message
+ban-reason-natural-causes: "You died!"
 # m = minutes, h = hours, d = days, mo = months
 # for permanent bans, delete all durations, except the first one, and set it to "perm"
 ban-durations:
@@ -12,7 +16,6 @@ ban-durations:
     - "6h"
     - "24h"
     - "7d"
-
 
 # The radius in which the death message/sound will be seen/heard when someone dies. 1 = 1 Block
 death-radius: 1000
@@ -29,7 +32,7 @@ lose-ban-after-time: true
 # s = seconds, m = minutes, h = hours, d = days
 lose-ban-after-duration: "2h"
 # use -1 to remove all bans after the time period
-lose-ban-amount: 1
+lose-ban-amount-after-duration: 1
 # The title on top oft the boss bar
 # Use %time% to show the remaining time until the next ban is removed
 countdown-bossbar-title: "§cYou will lose one ban in %time%"

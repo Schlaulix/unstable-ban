@@ -119,16 +119,17 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         UUID uuid = player.getUniqueId();
         int currentBanCount = banCount(banConfig, uuid);
         String banReason = getConfig().getString("ban-reason");
+        String banReasonNoKiller = getConfig().getString("ban-reason-natural-causes");
         String banDuration = getConfig().getStringList("ban-durations").get(currentBanCount);
         int radius = getConfig().getInt("death-radius");
 
 
         Player killer = event.getPlayer().getKiller();
         boolean killResetEnabled = getConfig().getBoolean("lose-ban-after-kill");
-        String soundName = getConfig().getString("death-sound");
+        String soundName = getConfig().getString("death-sound-type");
 
         assert soundName != null;
-        NamespacedKey key = NamespacedKey.fromString(soundName.toLowerCase());
+        NamespacedKey key = NamespacedKey.fromString(soundName.toUpperCase());
         Sound deathSound;
 
         if (key != null) {
@@ -158,9 +159,24 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
             }
         });
 
+        String reason;
+
+        if (killer != null) {
+            reason = Objects.requireNonNull(banReason)
+                    .replace("%player%", player.getName())
+                    .replace("%banCount%", String.valueOf(currentBanCount + 1));
+
+            reason = reason.replace("%killer%", killer.getName());
+        }else {
+            reason = Objects.requireNonNull(banReasonNoKiller)
+                    .replace("%player%", player.getName())
+                    .replace("%banCount%", String.valueOf(currentBanCount + 1));
+        }
+
+
         Bukkit.dispatchCommand(
 
-                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " " + banReason);
+                Bukkit.getConsoleSender(), "ban " + uuid + " " + banDuration + " " + reason);
 
         banConfig.set("bans." + uuid + ".banCount", currentBanCount + 1);
         saveBansFile(banFile, banConfig, this);
@@ -311,7 +327,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
     public void reduceBanCount(UUID uuid) {
         int currentBanCount = banCount(banConfig, uuid);
-        int loseBanAmount = getConfig().getInt("lose-ban-amount");
+        int loseBanAmount = getConfig().getInt("lose-ban-amount-after-duration");
         int banAmount;
 
         if (currentBanCount > 0) {
