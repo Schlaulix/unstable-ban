@@ -17,6 +17,9 @@ ban-durations:
     - "24h"
     - "7d"
 
+# Should a players bans be resetet after the last/longest ban time
+ban-durations-last-reset: true
+
 # The radius in which the death message/sound will be seen/heard when someone dies. 1 = 1 Block
 death-radius: 1000
 # Should the plugin send a death message in the chat and/or play a sound when someone dies ONLY IN THE ASSIGNED RADIUS?

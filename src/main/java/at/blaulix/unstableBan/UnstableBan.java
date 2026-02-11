@@ -65,14 +65,21 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         boolean timeResetEnabled = getConfig().getBoolean("lose-ban-after-time");
+        boolean noLastReset = getConfig().getBoolean("ban-durations-last-reset");
 
         int banTimesLength = getConfig().getStringList("ban-durations").size();
         String path = "bans." + uuid;
         int playerBanCount = banCount(banConfig, uuid);
 
-        if (!banConfig.contains(path) || playerBanCount >= banTimesLength) {
+        if (!banConfig.contains(path)) {
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
+            if(noLastReset){
+                if(playerBanCount >= banTimesLength){
+                    banConfig.set("bans." + uuid + ".banCount", 0);
+                    saveBansFile(banFile, banConfig, this);
+                }
+            }
         }
 
         if (timeResetEnabled) {
