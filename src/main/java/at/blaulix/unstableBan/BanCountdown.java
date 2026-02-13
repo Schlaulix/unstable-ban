@@ -36,7 +36,7 @@ public class BanCountdown {
 
     public void startBanCountdown(Player player, int banLoseAfter) {
 
-        String title = "§cUnstable Ban §7(You will lose your ban in " + bossBarManager.formatTime(banLoseAfter) + ")";
+        String title = configTitle.replace("%time%", bossBarManager.formatTime(banLoseAfter));
         bossBarManager.createBossBar(player, title);
         UUID uuid = player.getUniqueId();
 
