@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -157,9 +158,15 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                 }
 
                 if (deathMessageEnabled) {
+                    boolean isInvisible = killer.hasPotionEffect(PotionEffectType.INVISIBILITY);
                     Component deathMessage = event.deathMessage();
                     event.deathMessage(null);
                     if (deathMessage != null) {
+                        if (isInvisible) {
+                            String deathMsgInv = deathMessage.toString();
+                            deathMsgInv = deathMsgInv.replace(killer.getName(), "Anonymous");
+                            deathMessage = Component.text(deathMsgInv);
+                        }
                         p.sendMessage(deathMessage);
                     }
                 }
