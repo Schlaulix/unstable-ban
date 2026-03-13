@@ -75,8 +75,8 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
         if (!banConfig.contains(path)) {
             banConfig.set("bans." + uuid + ".banCount", 0);
             saveBansFile(banFile, banConfig, this);
-            if(noLastReset){
-                if(playerBanCount >= banTimesLength){
+            if (noLastReset) {
+                if (playerBanCount >= banTimesLength) {
                     banConfig.set("bans." + uuid + ".banCount", 0);
                     saveBansFile(banFile, banConfig, this);
                 }
@@ -148,6 +148,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
 
         boolean deathSoundEnabled = getConfig().getBoolean("death-sound");
         boolean deathMessageEnabled = getConfig().getBoolean("death-message");
+        boolean hidenInvisMessageEnabled = getConfig().getBoolean("hide-killer-name-if-invisible");
 
         player.getWorld().getPlayers().forEach(p -> {
             if (p.getLocation().distanceSquared(player.getLocation()) <= radius * radius) {
@@ -158,14 +159,18 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                 }
 
                 if (deathMessageEnabled) {
-                    boolean isInvisible = killer.hasPotionEffect(PotionEffectType.INVISIBILITY);
                     Component deathMessage = event.deathMessage();
                     event.deathMessage(null);
                     if (deathMessage != null) {
-                        if (isInvisible) {
-                            String deathMsgInv = deathMessage.toString();
-                            deathMsgInv = deathMsgInv.replace(killer.getName(), "Anonymous");
-                            deathMessage = Component.text(deathMsgInv);
+                        if (hidenInvisMessageEnabled) {
+                            if (killer != null) {
+                                boolean isInvisible = killer.hasPotionEffect(PotionEffectType.INVISIBILITY);
+                                if (isInvisible) {
+                                    String deathMsgInv = deathMessage.toString();
+                                    deathMsgInv = deathMsgInv.replace(killer.getName(), "Anonymous");
+                                    deathMessage = Component.text(deathMsgInv);
+                                }
+                            }
                         }
                         p.sendMessage(deathMessage);
                     }
@@ -181,7 +186,7 @@ public final class UnstableBan extends JavaPlugin implements Listener, SaveReadM
                     .replace("%banCount%", String.valueOf(currentBanCount + 1));
 
             reason = reason.replace("%killer%", killer.getName());
-        }else {
+        } else {
             reason = Objects.requireNonNull(banReasonNoKiller)
                     .replace("%player%", player.getName())
                     .replace("%banCount%", String.valueOf(currentBanCount + 1));

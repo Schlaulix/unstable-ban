@@ -25,6 +25,8 @@ death-radius: 1000
 # Should the plugin send a death message in the chat and/or play a sound when someone dies ONLY IN THE ASSIGNED RADIUS?
 death-message: true
 death-sound: true
+# Should the name of the killer be hidden in the death message if he is invisible?
+hide-killer-name-if-invisible: true
 # Only use sounds that are listet in https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
 death-sound-type: ENTITY_WITHER_SPAWN
 
